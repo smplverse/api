@@ -1,3 +1,5 @@
+import json
+
 from flask import Flask, request, abort, jsonify
 
 from src.inference_package.matcher import Matcher
@@ -14,5 +16,7 @@ def detect_face():
         abort(400)
     img_b64 = request.json['image']
     img = b64_to_numpy(img_b64)
-    b64 = numpy_to_b64(img)
+    # TODO return None if doesnt work and also enforce detection in frontend
+    img_with_landmarks = matcher.detector.face_mesh(img)
+    b64 = numpy_to_b64(img_with_landmarks)
     return jsonify({"image": b64})
