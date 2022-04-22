@@ -1,6 +1,6 @@
 import numpy as np
 
-from distance import Distance
+from src.inference_package.distance import Distance
 from typing import List, Union
 from mediapipe.python.solutions.face_detection import FaceDetection
 

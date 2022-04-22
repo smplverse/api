@@ -3,23 +3,22 @@ from typing import Dict, List
 
 import numpy as np
 
-from distance import Distance
-from detector import Detector
-from model import Model
+from src.inference_package.detector import Detector
+from src.inference_package.distance import Distance
+from src.inference_package.model import Model
 
 
 class Matcher:
 
-    headless: bool
     model: Model
     detector: Detector
     smpls_embeddings: Dict[str, np.ndarray]
     fnames: List[str]
     scores: List[float] = []
-    inference_times: List[float] = []
 
-    def __init__(self)
+    def __init__(self):
         self.model = Model(path="artifacts/resnet100.onnx")
+        self.distance = Distance()
         self.detector = Detector()
         self.failed_detections = 0
         with open("artifacts/embeddings.p", "rb") as f:
@@ -46,6 +45,6 @@ class Matcher:
                 skipped.append(fpath)
                 continue
             assert face_repr.shape == smpl_repr.shape
-            scores.append(Distance(smpl_repr, face_repr).euclidean_l2())
+            scores.append(self.distance(smpl_repr, face_repr).euclidean_l2())
         best_match = self.fnames[np.argmin(scores)]
         return best_match

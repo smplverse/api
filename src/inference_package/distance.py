@@ -3,7 +3,7 @@ import numpy as np
 
 class Distance:
 
-    def __init__(self, source: np.ndarray, test: np.ndarray):
+    def __call__(self, source: np.ndarray, test: np.ndarray):
         self.source = source
         self.test = test
 
