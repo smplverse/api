@@ -1,8 +1,8 @@
 import pytest
 import cv2
-import base64
 
-from src.app.app import app, numpy_to_b64
+from src.app.encode import numpy_to_b64
+from src.app.app import app
 
 
 @pytest.fixture()
