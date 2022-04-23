@@ -1,9 +1,7 @@
-import json
+from flask import Flask, abort, jsonify, request
 
-from flask import Flask, request, abort, jsonify
-
-from src.inference_package.matcher import Matcher
 from src.app.encode import b64_to_numpy, numpy_to_b64
+from src.inference_package.matcher import Matcher
 
 app = Flask(__name__)
 
