@@ -38,4 +38,8 @@ def assign_smpl():
         bad_request("No address provided")
     if "tokenId" not in request.json:
         bad_request("No tokenId provided")
+
+    # verify that address is the owner of a given smpl
+
+    # verify that the hash of image sent is the same as the one in the smart contract
     return jsonify({"error": None})
