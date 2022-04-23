@@ -1,22 +1,6 @@
-data "aws_ami" "ubuntu-linux-2004" {
-  most_recent = true
-  owners      = ["099720109477"]
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-}
-
 resource "aws_instance" "smplverse_instance" {
-  ami           = data.aws_ami.ubuntu-linux-2004.id
-  instance_type = "t2.medium"
-  count         = 1
+  ami           = var.PACKER_AMI
+  instance_type = "g4dn.xlarge"
   key_name      = "smplverse_key"
   depends_on = [
     aws_security_group.smplverse_security_group
@@ -56,9 +40,21 @@ resource "aws_security_group" "smplverse_security_group" {
     from_port   = 80
     to_port     = 80
   }
+
+  ingress {
+    cidr_blocks = ["0.0.0.0/0"]
+    protocol    = "tcp"
+    from_port   = 443
+    to_port     = 443
+  }
 }
 
 resource "aws_key_pair" "smplverse_key" {
   key_name   = "smplverse_key"
   public_key = file("~/.ssh/smplverse.pub")
+}
+
+resource "aws_eip_association" "eip_assoc" {
+  instance_id   = aws_instance.smplverse_instance.id
+  allocation_id = var.ALLOCATION_ID
 }

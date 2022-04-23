@@ -23,3 +23,9 @@ variable "PACKER_AMI" {
   sensitive = false
   default   = "ami-0e7593b27916cb057"
 }
+
+variable "ALLOCATION_ID" {
+  type      = string
+  sensitive = false
+  default   = "eipalloc-071668051e29076d5"
+}
