@@ -12,5 +12,5 @@ def b64_to_numpy(b64_string: str) -> np.ndarray:
 
 
 def numpy_to_b64(img: np.ndarray) -> str:
-    _, buffer = cv2.imencode('.png', img)
+    _, buffer = cv2.imencode('.jpeg', img)
     return base64.b64encode(buffer).decode('utf-8')

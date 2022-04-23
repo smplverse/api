@@ -4,3 +4,4 @@ opencv-python
 onnxruntime-gpu
 flask
 web3
+gunicorn

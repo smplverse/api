@@ -18,5 +18,7 @@ def detect_face():
     img = b64_to_numpy(img_b64)
     # TODO return None if doesnt work and also enforce detection in frontend
     img_with_landmarks = matcher.detector.face_mesh(img)
+    if img_with_landmarks is None:
+        return jsonify({"image": None, "error": "could not detect face"})
     b64 = numpy_to_b64(img_with_landmarks)
-    return jsonify({"image": b64})
+    return jsonify({"image": b64, "error": None})
