@@ -1,25 +1,23 @@
 version: '3'
 
 services:
-  proxy:
+  nginx:
     image: nginx
     ports:
       - 8000:80
     volumes:
       - ./nginx:/etc/nginx
-  api_cpu:
+  api:
     build: .
     image: piotrostr/smplverse-api
+    container_name: api
     platform: linux/amd64
     working_dir: /code
     volumes:
       - ./:/code
     ports:
       - 5000:5000
-    command: gunicorn -b "0.0.0.0:5000" main:app
-  api:
-    extends:
-      service: api_cpu
+    command: python main.py
     ipc: host
     ulimits:
       memlock: -1
