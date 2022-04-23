@@ -1,6 +1,6 @@
 FROM nvidia/cuda:11.6.2-devel-ubi8 as base
 
-RUN wget --quiet \
+RUN curl \
   https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
   -O ~/miniconda.sh \
   && /bin/bash ~/miniconda.sh -b -p /opt/conda
