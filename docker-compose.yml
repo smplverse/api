@@ -7,7 +7,7 @@ services:
       - 8000:80
     volumes:
       - ./nginx:/etc/nginx
-  api:
+  api_cpu:
     build: .
     image: piotrostr/smplverse-api
     platform: linux/amd64
@@ -17,6 +17,9 @@ services:
     ports:
       - 5000:5000
     command: gunicorn -b "0.0.0.0:5000" main:app
+  api:
+    extends:
+      service: api_cpu
     ipc: host
     ulimits:
       memlock: -1
