@@ -11,3 +11,9 @@ dist/
 htmlcov/
 .coverage
 .coverage.*
+**/.terraform/*
+*.tfvars
+crash.log
+crash.*.log
+*.tfstate
+*.tfstate.*
