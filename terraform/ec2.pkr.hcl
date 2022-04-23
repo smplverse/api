@@ -27,7 +27,7 @@ build {
   provisioner "shell" {
     inline = [
       "git config --global credential.helper cache",
-      "git clone https://piotrostr:${var.GITHUB_ACCESS_TOKEN}@github.com/piotrostr/smplverse"
+      "git clone https://piotrostr:${var.GITHUB_ACCESS_TOKEN}@github.com/piotrostr/smplverse-api"
     ]
   }
 
