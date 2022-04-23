@@ -12,5 +12,8 @@ def test_face_detection():
         json={"image": face_img_b64},
     )
     assert response.status_code == 200
+    assert response.json is not None
+    assert "image" in response.json
+    assert "error" in response.json
     img = b64_to_numpy(response.json["image"])
     assert img.shape == face_img.shape

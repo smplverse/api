@@ -1,7 +1,6 @@
 import numpy as np
 
-from src.inference_package.distance import Distance
-from typing import List, Union
+from typing import Union
 from mediapipe.python.solutions.face_detection import FaceDetection
 from mediapipe.python.solutions.face_mesh import (
     FaceMesh,
@@ -22,34 +21,6 @@ class Detector:
             max_num_faces=1,
             refine_landmarks=True,
         )
-
-    @staticmethod
-    def align(
-        img: np.ndarray,
-        left_eye: List[int],
-        right_eye: List[int],
-    ):
-        left_eye_x, left_eye_y = left_eye
-        right_eye_x, right_eye_y = right_eye
-
-        if left_eye_y > right_eye_y:
-            point_3rd = np.array([right_eye_x, left_eye_y])
-            direction = -1
-        else:
-            point_3rd = np.array([left_eye_x, right_eye_y])
-            direction = 1
-
-        a = Distance(left_eye, point_3rd).euclidean()
-        b = Distance(right_eye, point_3rd).euclidean()
-        c = Distance(right_eye, left_eye).euclidean()
-        if b != 0 and c != 0:
-            cos_a = (b * b + c * c - a * a) / (2 * b * c)
-            angle = np.arccos(cos_a)
-            angle = (angle * 180) / np.pi
-            if direction == -1:
-                angle = 90 - angle
-            img = img.rotate(direction * angle)
-        return img
 
     def face_mesh(self, img: np.ndarray) -> Union[np.ndarray, None]:
         results = self.face_mesh_detector.process(img)

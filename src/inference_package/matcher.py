@@ -45,6 +45,6 @@ class Matcher:
                 skipped.append(fpath)
                 continue
             assert face_repr.shape == smpl_repr.shape
-            scores.append(self.distance(smpl_repr, face_repr).euclidean_l2())
+            scores.append(self.distance.euclidean_l2(smpl_repr, face_repr))
         best_match = self.fnames[np.argmin(scores)]
         return best_match
