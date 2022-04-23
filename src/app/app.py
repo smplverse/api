@@ -13,6 +13,11 @@ def bad_request(msg: str):
     return Response(response=jsonify({"error": msg}), status=400)
 
 
+@app.route("/", methods=["GET"])
+def root():
+    return jsonify({"welcoming mesange": "helo dis smplverse"})
+
+
 @app.route("/detect-face", methods=["POST"])
 def detect_face():
     if not request.json:
