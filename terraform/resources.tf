@@ -1,12 +1,12 @@
 data "aws_ami" "ubuntu-linux-2004" {
   most_recent = true
-  owners      = ["099720109477"] 
-  
+  owners      = ["099720109477"]
+
   filter {
     name   = "name"
     values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
   }
-  
+
   filter {
     name   = "virtualization-type"
     values = ["hvm"]
@@ -14,7 +14,7 @@ data "aws_ami" "ubuntu-linux-2004" {
 }
 
 resource "aws_instance" "smplverse_instance" {
-  ami = data.aws_ami.ubuntu-linux-2004
+  ami           = data.aws_ami.ubuntu-linux-2004.id
   instance_type = "t2.medium"
   count         = 1
   key_name      = "smplverse_key"
