@@ -1,29 +1,16 @@
-import os
-from typing import Tuple
-from flask import Flask, abort, jsonify, request
+from flask import Flask, jsonify, request
 from werkzeug.sansio.response import Response
 
 from src.app.encode import b64_to_numpy, numpy_to_b64
 from src.inference_package.matcher import Matcher
-from web3 import Web3, HTTPProvider
-from web3.contract import Contract
 
 app = Flask(__name__)
 
-
-def init() -> Tuple[Matcher, Web3, Contract]:
-    key = os.environ.get("INFURA_KEY")
-    provider_url = "https://rinkeby.infura.io/v3/" + key
-    w3 = Web3(HTTPProvider(provider_url))
-    contract = Contract(os.environ.get("CONTRACT_ADDRESS_RINKEBY"))
-    return matcher, w3, contract
+matcher = Matcher()
 
 
 def bad_request(msg: str):
     return Response(response=jsonify({"error": msg}), status=400)
-
-
-matcher, provider, contract = init()
 
 
 @app.route("/", methods=["GET"])
