@@ -15,7 +15,7 @@ def test_checks_ownership():
 
 def test_checks_hash_uploaded():
     _, contract = init()
-    upload_hash: bytes = contract.functions.uploads(0).call()
+    upload_hash: bytes = contract.functions.uploads(880).call()
     hash_hex = "0x" + upload_hash.hex()
     zero = "0x0000000000000000000000000000000000000000000000000000000000000000"
     assert hash_hex == zero
