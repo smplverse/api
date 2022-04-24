@@ -29,10 +29,6 @@ class Matcher:
         """
         matches face from image against embeddings of smpls
         """
-        # TODO face has to be pre-detected as well in the frontend
-        # so make /detect-face endpoint that will return same image with coords
-        # plotted on it, on hover show the base image
-        # so that this surely wont fail
         face = self.detector.detect_face(img)
         if face is None or any(i == 0 for i in face.shape):
             print("could not detect face")
