@@ -43,4 +43,5 @@ class Matcher:
             assert face_repr.shape == smpl_repr.shape
             scores.append(self.distance.euclidean_l2(smpl_repr, face_repr))
         best_match = self.fnames[np.argmin(scores)]
-        return best_match
+        distance = np.min(scores)
+        return best_match, distance

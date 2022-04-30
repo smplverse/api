@@ -1,16 +1,10 @@
 import cv2
-import pytest
 
-from src.app.encode import numpy_to_b64, b64_to_numpy
+from src.app.encode import numpy_to_b64
 from src.app.app import app
 from src.smpls import get_smpls_object
 
 face_img = cv2.imread("artifacts/sample_face.png")
-
-
-@pytest.fixture()
-def smpls_object():
-    return get_smpls_object()
 
 
 def test_fails_with_invalid_address():
@@ -25,9 +19,13 @@ def test_fails_with_invalid_address():
     print(response.json)
 
 
-def test_after_claiming_smpl_becomes_unavailable(smpls_object):
-    # TODO ensure that once claimed is out of the data
-    ...
+def test_after_claiming_smpl_becomes_unavailable():
+    smpls = get_smpls_object()
+    available_smpls_before = smpls.available()
+    matched = list(available_smpls_before.keys())[5]
+    smpls.claim(matched)
+    available_smpls_after = smpls.available()
+    assert matched not in list(available_smpls_after.keys())
 
 
 def test_only_the_same_hash_can_be_used_to_claim():

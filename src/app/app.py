@@ -12,6 +12,8 @@ matcher = Matcher()
 
 _, contract = init()
 
+metadata = {}  # this has to be backed up in some way, ideally stored on ipfs
+
 
 def bad_request(msg: str):
     return Response(response=jsonify({"error": msg}), status=400)
@@ -66,11 +68,25 @@ def assign_smpl():
     # TODO upload the smpl to ipfs here or beforehand? (save time),
     # while preserving the index of the smpl in the embeddings
 
-    best_match_idx = matcher.match(b64_to_numpy(img_b64))
+    best_match, distance = matcher.match(b64_to_numpy(img_b64))
+    best_match_fname = best_match.split('/')[-1].split('.')[0]
+    metadata_to_add = {
+        "userImageHash": img_hash,
+        "smpl": best_match_fname,
+        "distance": distance
+    }
     # disclude the smpl from future runs
     # for the run I think another api of smpls should be up
     # and running synchronously so that it is nicely FIFO
     # metadata = fetch(best_match_id)
     # at this point make the metadata available (ipfs hash will be available too)
     # { CID, confidence, random_three_words?, userImageHash ...}
-    return jsonify({"something": "fancy"})
+    metadata[metadata_to_add] = metadata_to_add
+    return jsonify(metadata_to_add)
+
+
+@app.route("/metadata/<tokenId>", methods=["POST", "GET"])
+def metadata(tokenId):
+    if tokenId in metadata:
+        return metadata[tokenId]
+    return Response(404, response=jsonify({"error": "not found"}))
