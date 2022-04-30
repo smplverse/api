@@ -12,9 +12,23 @@ matcher = Matcher()
 
 _, contract = init()
 
-# below has to be backed up in some way,
-# ideally stored on ipfs, but pickling should work too
+# below has to be backed up in some way, might just be pickling it
 metadata = {}
+
+description = "SMPLverse is a collection of synthetic face data from the computational infrastructure of the metaverse, assigned to minters using facial recognition."
+clustered_ones = [
+    "037544",
+    "069701",
+    "099370",
+    "093321",
+    "051039",
+    "046594",
+    "059759",
+    "074727",
+    "083824",
+    "037661",
+    "059324",
+]
 
 
 @app.route("/", methods=["GET"])
@@ -63,32 +77,17 @@ def assign_smpl():
 
     best_match, distance = matcher.match(b64_to_numpy(img_b64))
     best_match_fname = best_match.split("/")[-1].split(".")[0]
-    desc = "SMPLverse is a collection of synthetic face data from the computational infrastructure of the metaverse, assigned to minters using facial recognition."
-    clustered_ones = [
-        "037544",
-        "069701",
-        "099370",
-        "093321",
-        "051039",
-        "046594",
-        "059759",
-        "074727",
-        "083824",
-        "037661",
-        "059324",
-    ]
-
     metadata_to_add = {
         "tokenId": tokenId,
-        "name": f"SMPL {best_match_fname}",
-        "description": desc,
+        "name": f"SMPL #{best_match_fname}",
+        "description": description,
         # add rev proxy to aws
         "external_url": "https://pieces.smplverse.xyz/token/#",
         "image": "ipfs://...",
         "attributes": [
             {
                 "trait_type": "confidence",
-                "value": f"{1 - distance:%}",  # TODO: make this a percentage with 3 decimals
+                "value": "%.3f" % (1 - distance),
             },
             {
                 "trait_type": "user image hash",
@@ -107,7 +106,8 @@ def assign_smpl():
 
     # TODO upload on a rolling basis, show the ipfs cid on the frontend and hyperlink it
     # replace the user image with the smpl
-    # stop displaying face mesh on hover
+
+    # TODO stop displaying face mesh on hover
 
     metadata[metadata_to_add] = metadata_to_add
     return jsonify(metadata_to_add)
