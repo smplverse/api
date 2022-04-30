@@ -12,12 +12,14 @@ matcher = Matcher()
 
 _, contract = init()
 
-metadata = {}  # this has to be backed up in some way, ideally stored on ipfs
+# below has to be backed up in some way,
+# ideally stored on ipfs, but pickling should work too
+metadata = {}
 
 
 @app.route("/", methods=["GET"])
 def root():
-    return jsonify({"welcoming mesange": "helo dis smplverse asfd"})
+    return "OK", 200
 
 
 @app.route("/detect-face", methods=["POST"])
