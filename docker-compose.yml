@@ -8,6 +8,9 @@ services:
     volumes:
       - ./nginx:/etc/nginx
   api:
+    environment:
+      - INFURA_KEY=$INFURA_KEY
+      - CHAIN=rinkeby
     build: .
     image: piotrostr/smplverse-api
     container_name: api
