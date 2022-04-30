@@ -28,5 +28,50 @@ def test_after_claiming_smpl_becomes_unavailable():
     assert matched not in list(available_smpls_after.keys())
 
 
-def test_only_the_same_hash_can_be_used_to_claim():
-    ...
+def test_bad_requests():
+    response = app.test_client().post(
+        "/get-smpl",
+        json={"not_image": "data,asdf"},
+    )
+    assert response.status_code == 400
+
+    response = app.test_client().post(
+        "/get-smpl",
+        json={
+            "image": "data,asdf",
+            "not_address": "not_address",
+        },
+    )
+    assert response.status_code == 400
+
+    response = app.test_client().post(
+        "/get-smpl",
+        json={
+            "image": "data,asdf",
+            "address": "0x123123123..",
+            "not_tokenId": "not_tokenId",
+        },
+    )
+    assert response.status_code == 400
+
+
+def test_valid_address():
+    response = app.test_client().post(
+        "/get-smpl",
+        json={
+            "image": "data,asdf",
+            "address": "0x123123123",
+            "tokenId": "123",
+        },
+    )
+    assert response.status_code == 400
+
+    response = app.test_client().post(
+        "/get-smpl",
+        json={
+            "image": "data,asdf",
+            "address": "0xF9c4F532074676a1EA27b3b81A0F6c4Ad511AC34",
+            "tokenId": "1",
+        },
+    )
+    assert response.status_code == 401

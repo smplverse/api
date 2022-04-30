@@ -6,6 +6,7 @@ from ..eth.init import init
 from ..inference_package.matcher import Matcher
 from .encode import b64_to_numpy, numpy_to_b64
 
+
 app = Flask(__name__)
 
 matcher = Matcher()
@@ -16,6 +17,7 @@ _, contract = init()
 metadata = {}
 
 description = "SMPLverse is a collection of synthetic face data from the computational infrastructure of the metaverse, assigned to minters using facial recognition."
+
 clustered_ones = [
     "037544",
     "069701",
@@ -51,8 +53,6 @@ def detect_face():
 
 @app.route("/get-smpl", methods=["POST"])
 def assign_smpl():
-    if not request.json:
-        return "No JSON data provided", 400
     if "image" not in request.json:
         return "No image provided", 400
     if "address" not in request.json:
@@ -60,20 +60,34 @@ def assign_smpl():
     if "tokenId" not in request.json:
         return "No tokenId provided", 400
 
-    tokenId = request.json["tokenId"]
+    try:
+        assert 7667 > int(request.json["tokenId"]) > 0
+    except (ValueError, AssertionError):
+        return "Invalid tokenId", 400
+
+    if not contract.web3.isAddress(request.json["address"]):
+        return "Invalid address", 400
+
+    if not "," in request.json["image"]:
+        return "Invalid image", 400
+
+    tokenId = int(request.json["tokenId"])
     sender_address = request.json["address"]
     image = request.json["image"]
-    _, img_b64 = ",".split(image)
 
+    _, img_b64 = image.split(",")
     img_hash = sha256(img_b64.encode()).hexdigest()
 
     owner, _, _ = contract.functions.explicitOwnershipOf(tokenId).call()
     if owner != sender_address:
-        return "address is not the owner of the smpl", 400
+        return "address is not the owner of the smpl", 401
 
     hash_in_contract: bytes = contract.functions.uploads(tokenId).call()
+    if eval(img_hash) == 0:
+        return f"image has not been uploaded for tokenId: {tokenId}", 401
+
     if img_hash != hash_in_contract.hex():
-        return "image hash does not match one in contract", 400
+        return "image hash does not match one in contract", 401
 
     best_match, distance = matcher.match(b64_to_numpy(img_b64))
     best_match_fname = best_match.split("/")[-1].split(".")[0]
