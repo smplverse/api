@@ -15,10 +15,6 @@ _, contract = init()
 metadata = {}  # this has to be backed up in some way, ideally stored on ipfs
 
 
-def bad_request(msg: str):
-    return Response(response=jsonify({"error": msg}), status=400)
-
-
 @app.route("/", methods=["GET"])
 def root():
     return jsonify({"welcoming mesange": "helo dis smplverse"})
@@ -26,10 +22,8 @@ def root():
 
 @app.route("/detect-face", methods=["POST"])
 def detect_face():
-    if not request.json:
-        bad_request("No JSON data provided")
     if "image" not in request.json:
-        bad_request("No image provided")
+        return "No image provided", 400
     img_b64 = request.json["image"]
     img = b64_to_numpy(img_b64)
     img_with_landmarks = matcher.detector.face_mesh(img)
@@ -42,13 +36,13 @@ def detect_face():
 @app.route("/get-smpl", methods=["POST"])
 def assign_smpl():
     if not request.json:
-        bad_request("No JSON data provided")
+        return "No JSON data provided", 400
     if "image" not in request.json:
-        bad_request("No image provided")
+        return "No image provided", 400
     if "address" not in request.json:
-        bad_request("No address provided")
+        return "No address provided", 400
     if "tokenId" not in request.json:
-        bad_request("No tokenId provided")
+        return "No tokenId provided", 400
 
     tokenId = request.json["tokenId"]
     sender_address = request.json["address"]
@@ -59,11 +53,11 @@ def assign_smpl():
 
     owner, _, _ = contract.functions.explicitOwnershipOf(tokenId).call()
     if owner != sender_address:
-        bad_request("address is not the owner of the smpl")
+        return "address is not the owner of the smpl", 400
 
     hash_in_contract: bytes = contract.functions.uploads(tokenId).call()
     if img_hash != hash_in_contract.hex():
-        bad_request("image hash does not match one in contract")
+        return "image hash does not match one in contract", 400
 
     best_match, distance = matcher.match(b64_to_numpy(img_b64))
     best_match_fname = best_match.split("/")[-1].split(".")[0]

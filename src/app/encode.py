@@ -15,16 +15,16 @@ def b64_to_numpy(b64_string: str) -> np.ndarray:
 
 
 def numpy_to_b64(img: np.ndarray) -> str:
-    _, buffer = cv2.imencode('.jpeg', img)
-    return base64.b64encode(buffer).decode('utf-8')
+    _, buffer = cv2.imencode(".jpeg", img)
+    return base64.b64encode(buffer).decode("utf-8")
 
 
 def serialize(obj: Any, fpath):
-    with open(fpath, 'wb') as f:
+    with open(fpath, "wb") as f:
         pickle.dump(obj, f)
 
 
 def deserialize(fpath: str) -> Any:
-    with open(fpath, 'rb') as f:
+    with open(fpath, "rb") as f:
         obj = pickle.load(f)
     return obj
