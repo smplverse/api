@@ -16,6 +16,6 @@ def init() -> Tuple[Web3, Contract]:
         artifact = json.loads(f.read())
     contract = w3.eth.contract(
         os.environ.get(f"CONTRACT_ADDRESS_{CHAIN.upper()}"),
-        abi=artifact['abi'],
+        abi=artifact["abi"],
     )
     return w3, contract

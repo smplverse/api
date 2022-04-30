@@ -3,9 +3,9 @@ from typing import Dict, List
 
 import numpy as np
 
-from src.inference_package.detector import Detector
-from src.inference_package.distance import Distance
-from src.inference_package.model import Model
+from .detector import Detector
+from .distance import Distance
+from .model import Model
 
 
 class Matcher:

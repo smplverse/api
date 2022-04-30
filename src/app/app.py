@@ -1,10 +1,10 @@
-from flask import Flask, jsonify, request
-from werkzeug.sansio.response import Response
-
-from src.app.encode import b64_to_numpy, numpy_to_b64
-from src.inference_package.matcher import Matcher
-from src.eth.init import init
 from hashlib import sha256
+
+from flask import Flask, jsonify, request
+
+from ..eth.init import init
+from ..inference_package.matcher import Matcher
+from .encode import b64_to_numpy, numpy_to_b64
 
 app = Flask(__name__)
 
@@ -17,7 +17,7 @@ metadata = {}  # this has to be backed up in some way, ideally stored on ipfs
 
 @app.route("/", methods=["GET"])
 def root():
-    return jsonify({"welcoming mesange": "helo dis smplverse"})
+    return jsonify({"welcoming mesange": "helo dis smplverse asfd"})
 
 
 @app.route("/detect-face", methods=["POST"])
@@ -115,4 +115,4 @@ def assign_smpl():
 def metadata(tokenId):
     if tokenId in metadata:
         return metadata[tokenId]
-    return Response(404, response=jsonify({"error": "not found"}))
+    return f"metadata for {tokenId} could not be found", 404

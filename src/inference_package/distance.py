@@ -2,7 +2,6 @@ import numpy as np
 
 
 class Distance:
-
     def cosine(self, source: np.ndarray, test: np.ndarray) -> float:
         a = np.matmul(np.transpose(source), test)
         b = np.sum(np.multiply(source, source))

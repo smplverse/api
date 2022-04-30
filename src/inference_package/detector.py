@@ -1,19 +1,18 @@
-import numpy as np
-
 from typing import Union
+
+from mediapipe.python.solutions import drawing_styles
+from mediapipe.python.solutions.drawing_utils import draw_landmarks
 from mediapipe.python.solutions.face_detection import FaceDetection
 from mediapipe.python.solutions.face_mesh import (
-    FaceMesh,
-    FACEMESH_TESSELATION,
     FACEMESH_CONTOURS,
     FACEMESH_IRISES,
+    FACEMESH_TESSELATION,
+    FaceMesh,
 )
-from mediapipe.python.solutions.drawing_utils import draw_landmarks
-from mediapipe.python.solutions import drawing_styles
+import numpy as np
 
 
 class Detector:
-
     def __init__(self):
         self.face_detector = FaceDetection(min_detection_confidence=0.7)
         self.face_mesh_detector = FaceMesh(
@@ -32,24 +31,21 @@ class Detector:
                     landmark_list=face_landmarks,
                     connections=FACEMESH_TESSELATION,
                     landmark_drawing_spec=None,
-                    connection_drawing_spec=drawing_styles.
-                    get_default_face_mesh_tesselation_style(),
+                    connection_drawing_spec=drawing_styles.get_default_face_mesh_tesselation_style(),
                 )
                 draw_landmarks(
                     image=_img,
                     landmark_list=face_landmarks,
                     connections=FACEMESH_CONTOURS,
                     landmark_drawing_spec=None,
-                    connection_drawing_spec=drawing_styles.
-                    get_default_face_mesh_contours_style(),
+                    connection_drawing_spec=drawing_styles.get_default_face_mesh_contours_style(),
                 )
                 draw_landmarks(
                     image=_img,
                     landmark_list=face_landmarks,
                     connections=FACEMESH_IRISES,
                     landmark_drawing_spec=None,
-                    connection_drawing_spec=drawing_styles.
-                    get_default_face_mesh_iris_connections_style(),
+                    connection_drawing_spec=drawing_styles.get_default_face_mesh_iris_connections_style(),
                 )
         else:
             return None
@@ -69,5 +65,5 @@ class Detector:
         w = int(bbox.width * img_width)
         y = int(bbox.ymin * img_height)
         h = int(bbox.height * img_height)
-        face = img[y:y + h, x:x + w]
+        face = img[y : y + h, x : x + w]
         return face
