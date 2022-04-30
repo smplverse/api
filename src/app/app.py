@@ -65,22 +65,54 @@ def assign_smpl():
     if img_hash != hash_in_contract.hex():
         bad_request("image hash does not match one in contract")
 
-    # TODO upload the smpl to ipfs here or beforehand? (save time),
-    # while preserving the index of the smpl in the embeddings
-
     best_match, distance = matcher.match(b64_to_numpy(img_b64))
-    best_match_fname = best_match.split('/')[-1].split('.')[0]
+    best_match_fname = best_match.split("/")[-1].split(".")[0]
+    desc = "SMPLverse is a collection of synthetic face data from the computational infrastructure of the metaverse, assigned to minters using facial recognition."
+    clustered_ones = [
+        "037544",
+        "069701",
+        "099370",
+        "093321",
+        "051039",
+        "046594",
+        "059759",
+        "074727",
+        "083824",
+        "037661",
+        "059324",
+    ]
+
     metadata_to_add = {
-        "userImageHash": img_hash,
-        "smpl": best_match_fname,
-        "distance": distance
+        "tokenId": tokenId,
+        "name": f"SMPL {best_match_fname}",
+        "description": desc,
+        # add rev proxy to aws
+        "external_url": "https://pieces.smplverse.xyz/token/#",
+        "image": "ipfs://...",
+        "attributes": [
+            {
+                "trait_type": "confidence",
+                "value": f"{1 - distance:%}",  # TODO: make this a percentage with 3 decimals
+            },
+            {
+                "trait_type": "user image hash",
+                "value": img_hash,
+            },
+        ],
     }
-    # disclude the smpl from future runs
-    # for the run I think another api of smpls should be up
-    # and running synchronously so that it is nicely FIFO
-    # metadata = fetch(best_match_id)
-    # at this point make the metadata available (ipfs hash will be available too)
-    # { CID, confidence, random_three_words?, userImageHash ...}
+
+    if best_match_fname in clustered_ones:
+        metadata_to_add["attributes"].append(
+            {
+                "trait_type": "Head Pose",
+                "value": "cluster_182",
+            }
+        )
+
+    # TODO upload on a rolling basis, show the ipfs cid on the frontend and hyperlink it
+    # replace the user image with the smpl
+    # stop displaying face mesh on hover
+
     metadata[metadata_to_add] = metadata_to_add
     return jsonify(metadata_to_add)
 
