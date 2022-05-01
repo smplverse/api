@@ -1,31 +1,17 @@
 import cv2
+import pytest
+from web3.contract import Contract
 
-from src.app.encode import numpy_to_b64
 from src.app.app import app
-from src.smpls import get_smpls_object
+from src.eth.init import init
 
 face_img = cv2.imread("artifacts/sample_face.png")
 
 
-def test_fails_with_invalid_address():
-    face_img_b64 = numpy_to_b64(face_img)
-    json = {
-        "address": "0x0000000000000000000000000000000000000000",
-        "image": face_img_b64,
-        "tokenId": 1,
-    }
-    response = app.test_client().post("/get-smpl", json=json)
-    # TODO the response will include the smpl cid, so that the user can view their art
-    print(response.json)
-
-
-def test_after_claiming_smpl_becomes_unavailable():
-    smpls = get_smpls_object()
-    available_smpls_before = smpls.available()
-    matched = list(available_smpls_before.keys())[5]
-    smpls.claim(matched)
-    available_smpls_after = smpls.available()
-    assert matched not in list(available_smpls_after.keys())
+@pytest.fixture
+def contract():
+    _, contract = init()
+    yield contract
 
 
 def test_bad_requests():
@@ -107,3 +93,37 @@ def test_valid_token_id():
         },
     )
     assert response.status_code == 401
+
+
+def test_fails_for_unuploaded_token_id():
+    response = app.test_client().post(
+        "/get-smpl",
+        json={
+            "image": "data,asdf",
+            "address": "0xF9c4F532074676a1EA27b3b81A0F6c4Ad511AC34",
+            "tokenId": "785",
+        },
+    )
+    assert response.status_code == 401
+    assert response.text == "image has not been uploaded for tokenId: 785"
+
+
+def test_fails_for_different_image():
+    response = app.test_client().post(
+        "/get-smpl",
+        json={
+            "image": "data,asdf",
+            "address": "0xF9c4F532074676a1EA27b3b81A0F6c4Ad511AC34",
+            "tokenId": "36",
+        },
+    )
+    assert response.status_code == 401
+    assert response.text == "image hash does not match one in contract"
+
+
+def test_fails_for_different_owner():
+    pass
+
+
+def test_passes_if_everything_is_right():
+    pass

@@ -76,18 +76,18 @@ def assign_smpl():
     image = request.json["image"]
 
     _, img_b64 = image.split(",")
-    img_hash = sha256(img_b64.encode()).hexdigest()
+    img_hash = "0x" + sha256(img_b64.encode()).hexdigest()
+
+    hash_in_contract = contract.functions.uploads(tokenId).call().hex()
+    if eval("0x" + hash_in_contract) == 0:
+        return f"image has not been uploaded for tokenId: {tokenId}", 401
+
+    if img_hash != hash_in_contract:
+        return "image hash does not match one in contract", 401
 
     owner, _, _ = contract.functions.explicitOwnershipOf(tokenId).call()
     if owner != sender_address:
         return "address is not the owner of the smpl", 401
-
-    hash_in_contract: bytes = contract.functions.uploads(tokenId).call()
-    if eval(img_hash) == 0:
-        return f"image has not been uploaded for tokenId: {tokenId}", 401
-
-    if img_hash != hash_in_contract.hex():
-        return "image hash does not match one in contract", 401
 
     best_match, distance = matcher.match(b64_to_numpy(img_b64))
     best_match_fname = best_match.split("/")[-1].split(".")[0]
@@ -96,7 +96,7 @@ def assign_smpl():
         "name": f"SMPL #{best_match_fname}",
         "description": description,
         # add rev proxy to aws
-        "external_url": "https://pieces.smplverse.xyz/token/#",
+        "external_url": f"https://pieces.smplverse.xyz/token/{tokenId}",
         "image": "ipfs://...",
         "attributes": [
             {
