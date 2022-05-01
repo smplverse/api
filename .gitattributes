@@ -3,3 +3,4 @@ artifacts/resnet100.onnx filter=lfs diff=lfs merge=lfs -text
 artifacts/sample_face.png filter=lfs diff=lfs merge=lfs -text
 artifacts/SMPLverse.json filter=lfs diff=lfs merge=lfs -text
 artifacts/embeddings_full.p filter=lfs diff=lfs merge=lfs -text
+artifacts/valid_img.jpeg filter=lfs diff=lfs merge=lfs -text
