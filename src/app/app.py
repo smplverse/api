@@ -5,6 +5,7 @@ from flask import Flask, jsonify, request
 from ..eth.init import init
 from ..inference_package.matcher import Matcher
 from .encode import b64_to_numpy, numpy_to_b64
+from ..smpls import get_metadata_object
 
 
 app = Flask(__name__)
@@ -14,7 +15,7 @@ matcher = Matcher()
 _, contract = init()
 
 # below has to be backed up in some way, might just be pickling it
-metadata_object = {}
+metadata_object = get_metadata_object()
 
 description = "SMPLverse is a collection of synthetic face data from the computational infrastructure of the metaverse, assigned to minters using facial recognition."
 
@@ -126,12 +127,13 @@ def get_smpl():
     # TODO upload on a rolling basis, show the ipfs cid on the frontend and hyperlink it
     # replace the user image with the smpl
 
-    metadata_object[metadata_to_add] = metadata_to_add
+    metadata_object.add(tokenId, metadata_to_add)
     return jsonify(metadata_to_add)
 
 
 @app.route("/metadata/<tokenId>", methods=["POST", "GET"])
-def metadata(tokenId):
-    if tokenId in metadata_object:
-        return metadata_object[tokenId]
+def get_metadata(tokenId):
+    metadata = metadata_object.get(tokenId)
+    if metadata is not None:
+        return metadata
     return f"metadata for {tokenId} could not be found", 404
