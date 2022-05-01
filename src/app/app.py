@@ -6,6 +6,7 @@ from ..eth.init import init
 from ..inference_package.matcher import Matcher
 from .encode import b64_to_numpy, numpy_to_b64
 from ..smpls import get_metadata_object
+from ..ipfs import IPFS
 
 
 app = Flask(__name__)
@@ -13,6 +14,8 @@ app = Flask(__name__)
 matcher = Matcher()
 
 _, contract = init()
+
+ipfs = IPFS()
 
 # below has to be backed up in some way, might just be pickling it
 metadata_object = get_metadata_object()
@@ -108,14 +111,19 @@ def get_smpl():
     _, img_b64 = image.split(",")
     best_match, distance = matcher.match(b64_to_numpy(img_b64))
     best_match_fname = best_match.split("/")[-1].split(".")[0]
+
+    # this will be smpl later but dont want to uplod them just yet
+    img_path = "artifacts/sample_face.png"
+    ipfs_response = ipfs.upload(img_path)
+
     metadata_to_add = {
         "tokenId": tokenId,
         "name": f"SMPL #{best_match_fname}",
         "description": description,
-        # add rev proxy to aws
+        # add rev proxy to aws but only upload the images once all minted
         "external_url": f"https://pieces.smplverse.xyz/token/{tokenId}",
         # placeholder image for now
-        "image": "ipfs://QmQqzMTavQgT4f4T5v6PWBp7XNKtoPmC9jvn12WPT3gkSE",
+        "image": f"ipfs://{ipfs_response['Hash']}",
         "attributes": [
             {
                 "trait_type": "confidence",
@@ -136,8 +144,7 @@ def get_smpl():
             }
         )
 
-    # TODO upload on a rolling basis, show the ipfs cid on the frontend and hyperlink it
-    # replace the user image with the smpl
+    # TODO persist metadata and prevent concurrency issue, go back to gunicorn
 
     metadata_object.add(tokenId, metadata_to_add)
     return jsonify(metadata_to_add)
