@@ -68,7 +68,7 @@ def assign_smpl():
     if not contract.web3.isAddress(request.json["address"]):
         return "Invalid address", 400
 
-    if not "," in request.json["image"]:
+    if not "data:image/jpeg;base64," in request.json["image"]:
         return "Invalid image", 400
 
     tokenId = int(request.json["tokenId"])
@@ -77,20 +77,17 @@ def assign_smpl():
 
     _, img_b64 = image.split(",")
     img_hash = "0x" + sha256(img_b64.encode()).hexdigest()
+    hash_in_contract = "0x" + contract.functions.uploads(tokenId).call().hex()
 
     if tokenId in metadata_object:
-        return f"smpl already assigned for tokenId {tokenId}", 400
-
-    if eval(img_hash) == 0:
-        return "image is empty", 400
+        return f"SMPL already assigned for tokenId {tokenId}", 400
 
     owner, _, _ = contract.functions.explicitOwnershipOf(tokenId).call()
-    if owner != sender_address:
-        return "address is not the owner of the smpl", 401
+    if owner != sender_address or eval(hash_in_contract) == 0:
+        return "Address is not the owner of the smpl", 401
 
-    hash_in_contract = "0x" + contract.functions.uploads(tokenId).call().hex()
     if img_hash != hash_in_contract:
-        return "image hash does not match one in contract", 401
+        return "Image hash does not match one in contract", 401
 
     print("passed to here")
     best_match, distance = matcher.match(b64_to_numpy(img_b64))
