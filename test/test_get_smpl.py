@@ -1,17 +1,8 @@
 import cv2
-import pytest
-from web3.contract import Contract
 
 from src.app.app import app
-from src.eth.init import init
 
 face_img = cv2.imread("artifacts/sample_face.png")
-
-
-@pytest.fixture
-def contract():
-    _, contract = init()
-    yield contract
 
 
 def test_bad_requests():
@@ -95,19 +86,6 @@ def test_valid_token_id():
     assert response.status_code == 401
 
 
-def test_fails_for_unuploaded_token_id():
-    response = app.test_client().post(
-        "/get-smpl",
-        json={
-            "image": "data,asdf",
-            "address": "0xF9c4F532074676a1EA27b3b81A0F6c4Ad511AC34",
-            "tokenId": "785",
-        },
-    )
-    assert response.status_code == 401
-    assert response.text == "image has not been uploaded for tokenId: 785"
-
-
 def test_fails_for_different_image():
     response = app.test_client().post(
         "/get-smpl",
@@ -119,11 +97,3 @@ def test_fails_for_different_image():
     )
     assert response.status_code == 401
     assert response.text == "image hash does not match one in contract"
-
-
-def test_fails_for_different_owner():
-    pass
-
-
-def test_passes_if_everything_is_right():
-    pass

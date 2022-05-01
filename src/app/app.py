@@ -14,7 +14,7 @@ matcher = Matcher()
 _, contract = init()
 
 # below has to be backed up in some way, might just be pickling it
-metadata = {}
+metadata_object = {}
 
 description = "SMPLverse is a collection of synthetic face data from the computational infrastructure of the metaverse, assigned to minters using facial recognition."
 
@@ -78,17 +78,21 @@ def assign_smpl():
     _, img_b64 = image.split(",")
     img_hash = "0x" + sha256(img_b64.encode()).hexdigest()
 
-    hash_in_contract = contract.functions.uploads(tokenId).call().hex()
-    if eval("0x" + hash_in_contract) == 0:
-        return f"image has not been uploaded for tokenId: {tokenId}", 401
+    if tokenId in metadata_object:
+        return f"smpl already assigned for tokenId {tokenId}", 400
 
-    if img_hash != hash_in_contract:
-        return "image hash does not match one in contract", 401
+    if eval(img_hash) == 0:
+        return "image is empty", 400
 
     owner, _, _ = contract.functions.explicitOwnershipOf(tokenId).call()
     if owner != sender_address:
         return "address is not the owner of the smpl", 401
 
+    hash_in_contract = "0x" + contract.functions.uploads(tokenId).call().hex()
+    if img_hash != hash_in_contract:
+        return "image hash does not match one in contract", 401
+
+    print("passed to here")
     best_match, distance = matcher.match(b64_to_numpy(img_b64))
     best_match_fname = best_match.split("/")[-1].split(".")[0]
     metadata_to_add = {
@@ -121,14 +125,12 @@ def assign_smpl():
     # TODO upload on a rolling basis, show the ipfs cid on the frontend and hyperlink it
     # replace the user image with the smpl
 
-    # TODO stop displaying face mesh on hover
-
-    metadata[metadata_to_add] = metadata_to_add
+    metadata_object[metadata_to_add] = metadata_to_add
     return jsonify(metadata_to_add)
 
 
 @app.route("/metadata/<tokenId>", methods=["POST", "GET"])
 def metadata(tokenId):
-    if tokenId in metadata:
-        return metadata[tokenId]
+    if tokenId in metadata_object:
+        return metadata_object[tokenId]
     return f"metadata for {tokenId} could not be found", 404
