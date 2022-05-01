@@ -39,6 +39,10 @@ def root():
     return "OK", 200
 
 
+def format_address(address):
+    return address[:3] + "..." + address[-3:]
+
+
 @app.route("/detect-face", methods=["POST"])
 def detect_face():
     if "image" not in request.json:
@@ -86,7 +90,14 @@ def get_smpl():
 
     owner, _, _ = contract.functions.explicitOwnershipOf(tokenId).call()
     if owner != sender_address:
-        return "Address is not the owner of the smpl", 401
+        return (
+            "Address {} is not the owner of the token {} ({})".format(
+                format_address(sender_address),
+                format_address(owner),
+                tokenId,
+            ),
+            401,
+        )
 
     if eval(hash_in_contract) == 0:
         return f"SMPL not uploaded for {tokenId} yet", 400

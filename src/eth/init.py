@@ -19,4 +19,5 @@ def init() -> Tuple[Web3, Contract]:
         CONTRACT_ADDRESS,
         abi=artifact["abi"],
     )
+    print(f"using contract at {CONTRACT_ADDRESS} on {CHAIN}")
     return w3, contract
