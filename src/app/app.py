@@ -42,7 +42,9 @@ def root():
 def detect_face():
     if "image" not in request.json:
         return "No image provided", 400
-    img_b64 = request.json["image"]
+    if not "data:image/jpeg;base64," in request.json["image"]:
+        return "Invalid image", 400
+    _, img_b64 = request.json["image"].split(",")
     img = b64_to_numpy(img_b64)
     img_with_landmarks = matcher.detector.face_mesh(img)
     if img_with_landmarks is None:
@@ -52,7 +54,7 @@ def detect_face():
 
 
 @app.route("/get-smpl", methods=["POST"])
-def assign_smpl():
+def get_smpl():
     if "image" not in request.json:
         return "No image provided", 400
     if "address" not in request.json:
@@ -75,21 +77,23 @@ def assign_smpl():
     sender_address = request.json["address"]
     image = request.json["image"]
 
-    _, img_b64 = image.split(",")
-    img_hash = "0x" + sha256(img_b64.encode()).hexdigest()
+    img_hash = "0x" + sha256(image.encode()).hexdigest()
     hash_in_contract = "0x" + contract.functions.uploads(tokenId).call().hex()
 
     if tokenId in metadata_object:
         return f"SMPL already assigned for tokenId {tokenId}", 400
 
     owner, _, _ = contract.functions.explicitOwnershipOf(tokenId).call()
-    if owner != sender_address or eval(hash_in_contract) == 0:
+    if owner != sender_address:
         return "Address is not the owner of the smpl", 401
+
+    if eval(hash_in_contract) == 0:
+        return f"SMPL not uploaded for {tokenId} yet", 400
 
     if img_hash != hash_in_contract:
         return "Image hash does not match one in contract", 401
 
-    print("passed to here")
+    _, img_b64 = image.split(",")
     best_match, distance = matcher.match(b64_to_numpy(img_b64))
     best_match_fname = best_match.split("/")[-1].split(".")[0]
     metadata_to_add = {

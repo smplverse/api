@@ -10,6 +10,7 @@ services:
   api:
     environment:
       - INFURA_KEY=$INFURA_KEY
+      - CONTRACT_ADDRESS_RINKEBY=$CONTRACT_ADDRESS_RINKEBY
       - CHAIN=rinkeby
     build: .
     image: piotrostr/smplverse-api

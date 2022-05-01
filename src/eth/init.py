@@ -7,6 +7,7 @@ from web3.contract import Contract
 
 CHAIN = "rinkeby"
 INFURA_KEY = os.environ.get("INFURA_KEY")
+CONTRACT_ADDRESS = os.environ.get(f"CONTRACT_ADDRESS_{CHAIN.upper()}")
 
 
 def init() -> Tuple[Web3, Contract]:
@@ -15,7 +16,7 @@ def init() -> Tuple[Web3, Contract]:
     with open("artifacts/SMPLverse.json", "r") as f:
         artifact = json.loads(f.read())
     contract = w3.eth.contract(
-        os.environ.get(f"CONTRACT_ADDRESS_{CHAIN.upper()}"),
+        CONTRACT_ADDRESS,
         abi=artifact["abi"],
     )
     return w3, contract
