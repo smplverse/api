@@ -81,7 +81,7 @@ def get_smpl():
     img_hash = "0x" + sha256(image.encode()).hexdigest()
     hash_in_contract = "0x" + contract.functions.uploads(tokenId).call().hex()
 
-    if tokenId in metadata_object:
+    if metadata_object.get(tokenId) is not None:
         return f"SMPL already assigned for tokenId {tokenId}", 400
 
     owner, _, _ = contract.functions.explicitOwnershipOf(tokenId).call()
@@ -103,7 +103,8 @@ def get_smpl():
         "description": description,
         # add rev proxy to aws
         "external_url": f"https://pieces.smplverse.xyz/token/{tokenId}",
-        "image": "ipfs://...",
+        # placeholder image for now
+        "image": "ipfs://QmQqzMTavQgT4f4T5v6PWBp7XNKtoPmC9jvn12WPT3gkSE",
         "attributes": [
             {
                 "trait_type": "confidence",
