@@ -25,27 +25,13 @@ class IPFS:
         assert self.project_id is not None
         assert self.project_secret is not None
 
-    def upload(self, content: str) -> Response:
-        files = {
-            "file": (content),
-        }
-
+    def upload(self, path: str) -> Response:
         response = self.s.post(
             self.endpoint + "/api/v0/add",
-            files=files,
+            params={"pin": "false"},
+            files={path: open(path, "rb")},
         )
         return response.json()
-
-    def get(self, loc: str):
-        params = [
-            ("arg", loc),
-        ]
-        res = self.s.post(
-            self.endpoint + "/api/v0/block/get",
-            params=params,
-        )
-        print(res.text)
-        print(res.headers)
 
     def _init_auth(self):
         credentials = "%s:%s" % (self.project_id, self.project_secret)
