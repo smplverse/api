@@ -2,7 +2,7 @@ import pickle
 from typing import Any
 
 
-def serialize(obj: Any, fpath):
+def serialize(obj: Any, fpath: str):
     with open(fpath, "wb") as f:
         pickle.dump(obj, f)
 

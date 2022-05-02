@@ -1,4 +1,4 @@
-import pickle
+from ..utils import load_json, save_json
 
 
 class Metadata:
@@ -30,11 +30,14 @@ class Metadata:
             else:
                 return False
 
-    def load(self):
-        pass
-
     def populate(self):
         pass
+
+    def load(self):
+        self._metadata = load_json("artifacts/metadata.json")
+
+    def save(self):
+        save_json(self._metadata, "artifacts/metadata.json")
 
 
 def get_metadata_object():
