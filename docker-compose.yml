@@ -15,6 +15,8 @@ services:
       - IPFS_ENDPOINT=$IPFS_ENDPOINT
       - IPFS_PROJECT_ID=$IPFS_PROJECT_ID
       - IPFS_PROJECT_SECRET=$IPFS_PROJECT_SECRET
+    env_file: 
+      - ./.env
     build: .
     image: piotrostr/smplverse-api
     container_name: api
