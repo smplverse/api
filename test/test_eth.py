@@ -1,4 +1,4 @@
-from src.eth.init import init
+from src.eth import init
 
 
 def test_inits_right():

@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
 
-from src.app.encode import numpy_to_b64, b64_to_numpy
-from src.app.app import app
+from src.utils import numpy_to_b64, b64_to_numpy
+from src.app import app
 
 
 def test_face_detection():

@@ -2,12 +2,11 @@ from hashlib import sha256
 
 from flask import Flask, jsonify, request
 
-from ..eth.init import init
+from ..eth import init
 from ..inference_package.matcher import Matcher
-from .encode import b64_to_numpy, numpy_to_b64
+from ..utils import b64_to_numpy, numpy_to_b64, format_address
 from ..smpls import get_metadata_object
 from ..ipfs import IPFS
-
 
 app = Flask(__name__)
 
@@ -40,10 +39,6 @@ clustered_ones = [
 @app.route("/", methods=["GET"])
 def root():
     return "OK", 200
-
-
-def format_address(address):
-    return address[:3] + "..." + address[-3:]
 
 
 @app.route("/detect-face", methods=["POST"])
@@ -117,13 +112,18 @@ def get_smpl():
     ipfs_response = ipfs.upload(img_path)
 
     metadata_to_add = {
-        "tokenId": tokenId,
-        "name": f"SMPL #{best_match_fname}",
-        "description": description,
+        "tokenId":
+        tokenId,
+        "name":
+        f"SMPL #{best_match_fname}",
+        "description":
+        description,
         # add rev proxy to aws but only upload the images once all minted
-        "external_url": f"https://pieces.smplverse.xyz/token/{tokenId}",
+        "external_url":
+        f"https://pieces.smplverse.xyz/token/{tokenId}",
         # placeholder image for now
-        "image": f"ipfs://{ipfs_response['Hash']}",
+        "image":
+        f"ipfs://{ipfs_response['Hash']}",
         "attributes": [
             {
                 "trait_type": "confidence",
@@ -137,12 +137,10 @@ def get_smpl():
     }
 
     if best_match_fname in clustered_ones:
-        metadata_to_add["attributes"].append(
-            {
-                "trait_type": "Head Pose",
-                "value": "cluster_182",
-            }
-        )
+        metadata_to_add["attributes"].append({
+            "trait_type": "Head Pose",
+            "value": "cluster_182",
+        })
 
     # TODO persist metadata and prevent concurrency issue, go back to gunicorn
 

@@ -1,10 +1,6 @@
-from dataclasses import dataclass
+import pickle
 
 
-# TODO add typing for metadata values struct
-
-
-@dataclass
 class Metadata:
 
     _metadata = {}
@@ -33,6 +29,12 @@ class Metadata:
                 return True
             else:
                 return False
+
+    def load(self):
+        pass
+
+    def populate(self):
+        pass
 
 
 def get_metadata_object():

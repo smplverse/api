@@ -1,9 +1,6 @@
 import cv2
 import base64
 import numpy as np
-import pickle
-
-from typing import Any
 
 
 def b64_to_numpy(b64_string: str) -> np.ndarray:
@@ -17,14 +14,3 @@ def b64_to_numpy(b64_string: str) -> np.ndarray:
 def numpy_to_b64(img: np.ndarray) -> str:
     _, buffer = cv2.imencode(".jpeg", img)
     return base64.b64encode(buffer).decode("utf-8")
-
-
-def serialize(obj: Any, fpath):
-    with open(fpath, "wb") as f:
-        pickle.dump(obj, f)
-
-
-def deserialize(fpath: str) -> Any:
-    with open(fpath, "rb") as f:
-        obj = pickle.load(f)
-    return obj

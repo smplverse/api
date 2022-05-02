@@ -1,6 +1,6 @@
 import cv2
 
-from src.app.app import app
+from src.app import app
 
 face_img = cv2.imread("artifacts/sample_face.png")
 
