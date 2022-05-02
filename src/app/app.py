@@ -49,23 +49,23 @@ def get_smpl():
         return "No image provided", 400
     if "address" not in request.json:
         return "No address provided", 400
-    if "token_id" not in request.json:
+    if "tokenId" not in request.json:
         return "No token_id provided", 400
 
     try:
-        assert 7667 > int(request.json["token_id"]) >= 0
+        assert 7667 > int(request.json["tokenId"]) >= 0
     except (ValueError, AssertionError):
         return "Invalid token_id", 400
 
-    if not contract.web3.isAddress(request.json["address"]):
-        return "Invalid address", 400
-
-    if not "data:image/jpeg;base64," in request.json["image"]:
-        return "Invalid image", 400
-
-    token_id = request.json["token_id"]
+    token_id = int(request.json["tokenId"])
     sender_address = request.json["address"]
     image = request.json["image"]
+
+    if not contract.web3.isAddress(sender_address):
+        return "Invalid address", 400
+
+    if not "data:image/jpeg;base64," in image:
+        return "Invalid image", 400
 
     user_img_hash = "0x" + sha256(image.encode()).hexdigest()
     hash_in_contract = "0x" + contract.functions.uploads(token_id).call().hex()
@@ -95,8 +95,12 @@ def get_smpl():
     best_match_fname = best_match.split("/")[-1].split(".")[0]
 
     # this will be smpl later but dont want to uplod them just yet
+    # change to `img_path` to `best_match` to upload smpl
     img_path = "artifacts/sample_face.png"
     ipfs_response = ipfs.upload(img_path)
+
+    # convert back to string (easier with dicts)
+    token_id = str(token_id)
 
     metadata_object.add(
         token_id,
