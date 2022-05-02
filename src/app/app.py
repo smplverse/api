@@ -96,8 +96,9 @@ def get_smpl():
 
     # this will be smpl later but dont want to uplod them just yet
     # change to `img_path` to `best_match` to upload smpl
-    img_path = "artifacts/sample_face.png"
-    ipfs_response = ipfs.upload(img_path)
+    # img_path = "artifacts/sample_face.png"
+    print(best_match)
+    ipfs_response = ipfs.upload(best_match)
 
     # convert back to string (easier with dicts)
     token_id = str(token_id)

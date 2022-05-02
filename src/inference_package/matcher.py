@@ -30,7 +30,7 @@ class Matcher:
         matches face from image against embeddings of smpls
         """
         face = self.detector.detect_face(img)
-        if not face:
+        if face is None:
             raise Exception("No face detected")
         face_repr = self.model(face)
         scores = []
