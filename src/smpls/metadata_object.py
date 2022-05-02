@@ -1,5 +1,6 @@
 from typing import Union, List
 from ..utils import load_json, save_json
+from ..eth import init
 from typing import TypedDict, List
 
 Attribute = TypedDict("Attribute", {"trait_type": str, "value": str})
@@ -42,7 +43,11 @@ class Metadata:
             self._prepopulate()
 
     def _load(self):
-        self._metadata = load_json("artifacts/metadata.json")
+        metadata = load_json("artifacts/metadata.json")
+        if metadata is not None:
+            self._metadata = metadata
+        else:
+            self._metadata = {}
 
     def _save(self):
         save_json(self._metadata, "artifacts/metadata.json")
@@ -82,9 +87,11 @@ class Metadata:
         return metadata_entry
 
     def _prepopulate(self):
-        for i in range(0, 7666):
-            self._metadata[i] = {
-                "token_id": i,
+        _, contract = init()
+        total_supply = contract.functions.totalSupply().call()
+        for i in range(0, total_supply - 1):
+            self._metadata[str(i)] = {
+                "token_id": str(i),
                 "name": "UNCLAIMED SMPL",
                 "description": self._description,
                 "external_url": "",
@@ -94,7 +101,7 @@ class Metadata:
 
     def add(
         self,
-        token_id: int,
+        token_id: str,
         best_match_fname: str,
         ipfs_hash: str,
         distance: float,
@@ -112,7 +119,7 @@ class Metadata:
         )
         self._save()
 
-    def get(self, token_id):
+    def get(self, token_id: str):
         if token_id in self._metadata:
             return self._metadata[token_id]
         else:

@@ -5,7 +5,7 @@ from flask import Flask, jsonify, request
 from ..eth import init
 from ..inference_package.matcher import Matcher
 from ..utils import b64_to_numpy, numpy_to_b64, format_address
-from ..smpls import get_metadata_object
+from ..smpls import Metadata
 from ..ipfs import IPFS
 
 app = Flask(__name__)
@@ -16,8 +16,7 @@ _, contract = init()
 
 ipfs = IPFS()
 
-# below has to be backed up in some way, might just be pickling it
-metadata_object = get_metadata_object()
+metadata_object = Metadata()
 
 
 @app.route("/", methods=["GET"])
@@ -64,7 +63,7 @@ def get_smpl():
     if not "data:image/jpeg;base64," in request.json["image"]:
         return "Invalid image", 400
 
-    token_id = int(request.json["token_id"])
+    token_id = request.json["token_id"]
     sender_address = request.json["address"]
     image = request.json["image"]
 
@@ -111,7 +110,7 @@ def get_smpl():
 
 
 @app.route("/metadata/<token_id>", methods=["POST", "GET"])
-def get_metadata(token_id):
+def get_metadata(token_id: str):
     metadata = metadata_object.get(token_id)
     if metadata is not None:
         return jsonify(metadata)
