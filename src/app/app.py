@@ -19,22 +19,6 @@ ipfs = IPFS()
 # below has to be backed up in some way, might just be pickling it
 metadata_object = get_metadata_object()
 
-description = "SMPLverse is a collection of synthetic face data from the computational infrastructure of the metaverse, assigned to minters using facial recognition."
-
-clustered_ones = [
-    "037544",
-    "069701",
-    "099370",
-    "093321",
-    "051039",
-    "046594",
-    "059759",
-    "074727",
-    "083824",
-    "037661",
-    "059324",
-]
-
 
 @app.route("/", methods=["GET"])
 def root():
@@ -62,13 +46,13 @@ def get_smpl():
         return "No image provided", 400
     if "address" not in request.json:
         return "No address provided", 400
-    if "tokenId" not in request.json:
-        return "No tokenId provided", 400
+    if "token_id" not in request.json:
+        return "No token_id provided", 400
 
     try:
-        assert 7667 > int(request.json["tokenId"]) >= 0
+        assert 7667 > int(request.json["token_id"]) >= 0
     except (ValueError, AssertionError):
-        return "Invalid tokenId", 400
+        return "Invalid token_id", 400
 
     if not contract.web3.isAddress(request.json["address"]):
         return "Invalid address", 400
@@ -76,29 +60,29 @@ def get_smpl():
     if not "data:image/jpeg;base64," in request.json["image"]:
         return "Invalid image", 400
 
-    tokenId = int(request.json["tokenId"])
+    token_id = int(request.json["token_id"])
     sender_address = request.json["address"]
     image = request.json["image"]
 
     img_hash = "0x" + sha256(image.encode()).hexdigest()
-    hash_in_contract = "0x" + contract.functions.uploads(tokenId).call().hex()
+    hash_in_contract = "0x" + contract.functions.uploads(token_id).call().hex()
 
-    if metadata_object.get(tokenId) is not None:
-        return f"SMPL already assigned for tokenId {tokenId}", 400
+    if metadata_object.get(token_id) is not None:
+        return f"SMPL already assigned for token_id {token_id}", 400
 
-    owner, _, _ = contract.functions.explicitOwnershipOf(tokenId).call()
+    owner, _, _ = contract.functions.explicitOwnershipOf(token_id).call()
     if owner != sender_address:
         return (
             "Address {} is not the owner of the token {} ({})".format(
                 format_address(sender_address),
                 format_address(owner),
-                tokenId,
+                token_id,
             ),
             401,
         )
 
     if eval(hash_in_contract) == 0:
-        return f"SMPL not uploaded for {tokenId} yet", 400
+        return f"SMPL not uploaded for {token_id} yet", 400
 
     if img_hash != hash_in_contract:
         return "Image hash does not match one in contract", 401
@@ -111,43 +95,21 @@ def get_smpl():
     img_path = "artifacts/sample_face.png"
     ipfs_response = ipfs.upload(img_path)
 
-    metadata_to_add = {
-        "tokenId": tokenId,
-        "name": f"SMPL #{best_match_fname}",
-        "description": description,
-        # add rev proxy to aws but only upload the images once all minted
-        "external_url": f"https://pieces.smplverse.xyz/token/{tokenId}",
-        # placeholder image for now
-        "image": f"ipfs://{ipfs_response['Hash']}",
-        "attributes": [
-            {
-                "trait_type": "confidence",
-                "value": "%.3f" % (1 - distance),
-            },
-            {
-                "trait_type": "user image hash",
-                "value": img_hash,
-            },
-        ],
-    }
+    metadata_object.add(
+        token_id,
+        best_match_fname,
+        distance,
+        img_path,
+        ipfs_response["hash"],
+        user_img_hash=img_hash,
+    )
 
-    if best_match_fname in clustered_ones:
-        metadata_to_add["attributes"].append(
-            {
-                "trait_type": "Head Pose",
-                "value": "cluster_182",
-            }
-        )
-
-    # TODO persist metadata and prevent concurrency issue, go back to gunicorn
-
-    metadata_object.add(tokenId, metadata_to_add)
-    return jsonify(metadata_to_add)
+    return jsonify(metadata_object.get(token_id))
 
 
-@app.route("/metadata/<tokenId>", methods=["POST", "GET"])
-def get_metadata(tokenId):
-    metadata = metadata_object.get(tokenId)
+@app.route("/metadata/<token_id>", methods=["POST", "GET"])
+def get_metadata(token_id):
+    metadata = metadata_object.get(token_id)
     if metadata is not None:
-        return metadata
-    return f"metadata for {tokenId} could not be found", 404
+        return jsonify(metadata)
+    return f"metadata for {token_id} could not be found", 404
