@@ -1,8 +1,20 @@
-from typing import Dict, Union, List
+from typing import Union, List
 from ..utils import load_json, save_json
+from typing import TypedDict, List
 
-Attribute = Dict[str, str]
-MetadataEntry = Dict[str, Union[str, List[Attribute]]]
+Attribute = TypedDict("Attribute", {"trait_type": str, "value": str})
+
+MetadataEntry = TypedDict(
+    "MetadataEntry",
+    {
+        "token_id": Union[int, str],
+        "name": str,
+        "description": str,
+        "external_url": str,
+        "image": str,
+        "attributes": List[Attribute],
+    },
+)
 
 
 class Metadata:
@@ -41,13 +53,11 @@ class Metadata:
         distance: float,
         user_img_hash: str,
     ) -> MetadataEntry:
-        metadata_entry = {
+        metadata_entry: MetadataEntry = {
             "token_id": token_id,
             "name": f"SMPL #{best_match_fname}",
             "description": self._description,
-            # add rev proxy to aws but only upload the images once all minted
             "external_url": f"https://pieces.smplverse.xyz/token/{token_id}",
-            # placeholder image for now
             "image": f"ipfs://{ipfs_hash}",
             "attributes": [
                 {
