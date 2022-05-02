@@ -9,8 +9,9 @@ def test_inits_right():
 
 def test_checks_ownership():
     _, contract = init()
-    owner_of_first, _, _ = contract.functions.explicitOwnershipOf(0).call()
-    assert owner_of_first == contract.functions.owner().call()
+    got, _, _ = contract.functions.explicitOwnershipOf(1).call()
+    want = "0xF9c4F532074676a1EA27b3b81A0F6c4Ad511AC34"
+    assert got == want
 
 
 def test_checks_hash_uploaded():

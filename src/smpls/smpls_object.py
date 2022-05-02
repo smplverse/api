@@ -1,4 +1,4 @@
-from src.app.encode import deserialize
+from src.utils import deserialize
 from dataclasses import dataclass
 
 
