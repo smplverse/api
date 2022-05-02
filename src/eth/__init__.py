@@ -11,12 +11,16 @@ CONTRACT_ADDRESS = os.environ.get(f"CONTRACT_ADDRESS_{CHAIN.upper()}")
 
 
 def init() -> Tuple[Web3, Contract]:
-    provider_url = f"https://{CHAIN}.infura.io/v3/" + INFURA_KEY
+    if not INFURA_KEY:
+        raise ValueError("INFURA_KEY is not set")
+    if not CONTRACT_ADDRESS:
+        raise ValueError(f"CONTRACT_ADDRESS_{CHAIN.upper()} is not set")
+    provider_url = f"https://{CHAIN}.infura.io/v3/{INFURA_KEY}"
     w3 = Web3(HTTPProvider(provider_url))
     with open("artifacts/SMPLverse.json", "r") as f:
         artifact = json.loads(f.read())
     contract = w3.eth.contract(
-        CONTRACT_ADDRESS,
+        w3.toChecksumAddress(CONTRACT_ADDRESS),
         abi=artifact["abi"],
     )
     print(f"using contract at {CONTRACT_ADDRESS} on {CHAIN}")

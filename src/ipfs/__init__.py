@@ -5,10 +5,14 @@ from typing import TypedDict
 import requests
 
 
-class Response(TypedDict):
-    Name: str
-    Hash: str
-    Size: str
+IpfsResponse = TypedDict(
+    "IpfsResponse",
+    {
+        "Hash": str,
+        "Name": str,
+        "Size": str,
+    },
+)
 
 
 class IPFS:
@@ -25,9 +29,9 @@ class IPFS:
         assert self.project_id is not None
         assert self.project_secret is not None
 
-    def upload(self, path: str) -> Response:
+    def upload(self, path: str) -> IpfsResponse:
         response = self.s.post(
-            self.endpoint + "/api/v0/add",
+            f"{self.endpoint}/api/v0/add",
             params={"pin": "false"},
             files={path: open(path, "rb")},
         )

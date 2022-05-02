@@ -27,6 +27,8 @@ def root():
 
 @app.route("/detect-face", methods=["POST"])
 def detect_face():
+    if not request.json:
+        return 400
     if "image" not in request.json:
         return "No image provided", 400
     if not "data:image/jpeg;base64," in request.json["image"]:
@@ -42,6 +44,8 @@ def detect_face():
 
 @app.route("/get-smpl", methods=["POST"])
 def get_smpl():
+    if not request.json:
+        return 400
     if "image" not in request.json:
         return "No image provided", 400
     if "address" not in request.json:
@@ -64,7 +68,7 @@ def get_smpl():
     sender_address = request.json["address"]
     image = request.json["image"]
 
-    img_hash = "0x" + sha256(image.encode()).hexdigest()
+    user_img_hash = "0x" + sha256(image.encode()).hexdigest()
     hash_in_contract = "0x" + contract.functions.uploads(token_id).call().hex()
 
     if metadata_object.get(token_id) is not None:
@@ -84,7 +88,7 @@ def get_smpl():
     if eval(hash_in_contract) == 0:
         return f"SMPL not uploaded for {token_id} yet", 400
 
-    if img_hash != hash_in_contract:
+    if user_img_hash != hash_in_contract:
         return "Image hash does not match one in contract", 401
 
     _, img_b64 = image.split(",")
@@ -98,10 +102,9 @@ def get_smpl():
     metadata_object.add(
         token_id,
         best_match_fname,
+        ipfs_response["Hash"],
         distance,
-        img_path,
-        ipfs_response["hash"],
-        user_img_hash=img_hash,
+        user_img_hash,
     )
 
     return jsonify(metadata_object.get(token_id))
