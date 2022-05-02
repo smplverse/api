@@ -1,6 +1,6 @@
 import cv2
 
-from src.app import app
+from . import app
 
 face_img = cv2.imread("artifacts/sample_face.png")
 
@@ -105,8 +105,9 @@ def test_fails_for_different_image():
         json={
             "image": "data:image/jpeg;base64,asdf",
             "address": "0xF9c4F532074676a1EA27b3b81A0F6c4Ad511AC34",
-            "tokenId": "36",
+            "tokenId": "0",
         },
     )
+    print(response.text)
     assert response.status_code == 401
     assert response.text == "Image hash does not match one in contract"

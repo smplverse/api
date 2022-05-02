@@ -66,7 +66,7 @@ def get_smpl():
         return "No tokenId provided", 400
 
     try:
-        assert 7667 > int(request.json["tokenId"]) > 0
+        assert 7667 > int(request.json["tokenId"]) >= 0
     except (ValueError, AssertionError):
         return "Invalid tokenId", 400
 
@@ -112,18 +112,13 @@ def get_smpl():
     ipfs_response = ipfs.upload(img_path)
 
     metadata_to_add = {
-        "tokenId":
-        tokenId,
-        "name":
-        f"SMPL #{best_match_fname}",
-        "description":
-        description,
+        "tokenId": tokenId,
+        "name": f"SMPL #{best_match_fname}",
+        "description": description,
         # add rev proxy to aws but only upload the images once all minted
-        "external_url":
-        f"https://pieces.smplverse.xyz/token/{tokenId}",
+        "external_url": f"https://pieces.smplverse.xyz/token/{tokenId}",
         # placeholder image for now
-        "image":
-        f"ipfs://{ipfs_response['Hash']}",
+        "image": f"ipfs://{ipfs_response['Hash']}",
         "attributes": [
             {
                 "trait_type": "confidence",
@@ -137,10 +132,12 @@ def get_smpl():
     }
 
     if best_match_fname in clustered_ones:
-        metadata_to_add["attributes"].append({
-            "trait_type": "Head Pose",
-            "value": "cluster_182",
-        })
+        metadata_to_add["attributes"].append(
+            {
+                "trait_type": "Head Pose",
+                "value": "cluster_182",
+            }
+        )
 
     # TODO persist metadata and prevent concurrency issue, go back to gunicorn
 
