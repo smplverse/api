@@ -38,6 +38,8 @@ class Metadata:
 
     def __init__(self):
         self._load()
+        if self._metadata == {}:
+            self._prepopulate()
 
     def _load(self):
         self._metadata = load_json("artifacts/metadata.json")
@@ -78,6 +80,17 @@ class Metadata:
                 }
             )
         return metadata_entry
+
+    def _prepopulate(self):
+        for i in range(0, 7666):
+            self._metadata[i] = {
+                "token_id": i,
+                "name": "UNCLAIMED SMPL",
+                "description": self._description,
+                "external_url": "",
+                "image": "ipfs://QmYypT49WH7rYTL2jXpfoNH2DAMHe9VM7pwwEjUVr45XK1",
+                "attributes": [],
+            }
 
     def add(
         self,
