@@ -4,7 +4,7 @@ from flask import Flask, jsonify, request
 
 from ..eth import init
 from ..inference_package.matcher import Matcher
-from ..utils import b64_to_numpy, numpy_to_b64, format_address
+from ..utils import b64_to_numpy, numpy_to_b64, format_address, b64_from_file
 from ..smpls import Metadata
 from ..ipfs import IPFS
 
@@ -111,7 +111,14 @@ def get_smpl():
         user_img_hash,
     )
 
-    return jsonify(metadata_object.get(token_id))
+    smpl_image = f"data:image/png;base64,{b64_from_file(best_match)}"
+
+    return jsonify(
+        {
+            **metadata_object.get(token_id),
+            "smpl_image": smpl_image,
+        }
+    )
 
 
 @app.route("/metadata/<token_id>", methods=["POST", "GET"])
