@@ -121,9 +121,13 @@ def get_smpl():
     )
 
 
-@app.route("/metadata/<token_id>", methods=["POST", "GET"])
+@app.route("/metadata/<token_id>", methods=["GET"])
 def get_metadata(token_id: str):
-    metadata = metadata_object.get(token_id)
-    if metadata is not None:
-        return jsonify(metadata)
-    return f"metadata for {token_id} could not be found", 404
+    try:
+        assert 7667 > int(token_id) >= 0
+    except (ValueError, AssertionError):
+        return "Invalid token_id", 400
+    total_supply = contract.functions.totalSupply().call()
+    if int(token_id) + 1 > total_supply:
+        return "Token not minted yet", 404
+    return metadata_object.get(token_id)
