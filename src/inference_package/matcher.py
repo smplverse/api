@@ -6,14 +6,13 @@ import numpy as np
 from .detector import Detector
 from .distance import Distance
 from .model import Model
+from ..smpls import get_smpls_object
 
 
 class Matcher:
 
     model: Model
     detector: Detector
-    smpls_embeddings: Dict[str, np.ndarray]
-    fnames: List[str]
     scores: List[float] = []
 
     def __init__(self):
@@ -21,9 +20,7 @@ class Matcher:
         self.distance = Distance()
         self.detector = Detector()
         self.failed_detections = 0
-        with open("artifacts/embeddings.p", "rb") as f:
-            self.smpls_embeddings = pickle.load(f)
-        self.fnames = list(self.smpls_embeddings.keys())
+        self.smpls = get_smpls_object()
 
     def match(self, img: np.ndarray):
         """
@@ -41,6 +38,8 @@ class Matcher:
                 continue
             assert face_repr.shape == smpl_repr.shape
             scores.append(self.distance.euclidean_l2(smpl_repr, face_repr))
-        best_match = self.fnames[np.argmin(scores)]
+        fnames = list(self.smpls.available().keys())
+        best_match = fnames[np.argmin(scores)]
+        self.smpls.claim(best_match)
         distance = np.min(scores)
         return best_match, distance

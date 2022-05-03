@@ -26,8 +26,8 @@ services:
       - ./:/code
     ports:
       - 5000:5000
-    # command: gunicorn src.app.app:app
-    command: python main.py
+    command: gunicorn src.app.app:app
+    # command: python main.py
     ipc: host
     ulimits:
       memlock: -1

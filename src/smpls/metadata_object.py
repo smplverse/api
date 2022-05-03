@@ -1,6 +1,5 @@
 from typing import Union, List
 from ..utils import load_json, save_json
-from ..eth import init
 from typing import TypedDict, List
 
 Attribute = TypedDict("Attribute", {"trait_type": str, "value": str})
