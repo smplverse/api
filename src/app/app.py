@@ -72,8 +72,9 @@ def get_smpl():
 
     user_img_hash = "0x" + sha256(image.encode()).hexdigest()
     hash_in_contract = "0x" + contract.functions.uploads(token_id).call().hex()
-
-    if metadata_object.get(token_id) is not None:
+    
+    existing_metadata = metadata_object.get(token_id)
+    if  existing_metadata["name"] is not "UNCLAIMED SMPL":
         return f"SMPL already assigned for token_id {token_id}", 400
 
     owner, _, _ = contract.functions.explicitOwnershipOf(token_id).call()
