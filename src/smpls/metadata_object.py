@@ -36,6 +36,8 @@ class Metadata:
         "059324",
     ]
 
+    _base_s3_url = "https://smplverse.s3.us-east-2.amazonaws.com/"
+
     def __init__(self):
         self._load()
         if self._metadata == {}:
@@ -63,7 +65,7 @@ class Metadata:
             "token_id": token_id,
             "name": f"SMPL #{best_match_fname}",
             "description": self._description,
-            "external_url": f"https://pieces.smplverse.xyz/token/{token_id}",
+            "external_url": f"{self._base_s3_url}/{best_match_fname}.png",
             "image": f"ipfs://{ipfs_hash}",
             "attributes": [
                 {

@@ -7,6 +7,7 @@ from ..inference_package.matcher import Matcher
 from ..utils import b64_to_numpy, numpy_to_b64, format_address, b64_from_file
 from ..smpls import Metadata
 from ..ipfs import IPFS
+from ..s3 import S3
 
 app = Flask(__name__)
 
@@ -17,6 +18,8 @@ _, contract = init()
 ipfs = IPFS()
 
 metadata_object = Metadata()
+
+s3 = S3()
 
 
 @app.route("/", methods=["GET"])
@@ -91,17 +94,16 @@ def get_smpl():
         return "Image hash does not match one in contract", 401
 
     _, img_b64 = image.split(",")
-    best_match, distance = matcher.match(b64_to_numpy(img_b64))
+    img_numpy = b64_to_numpy(img_b64)
+    best_match, distance = matcher.match(img_numpy)
     best_match_fname = best_match.split("/")[-1].split(".")[0]
 
-    # this will be smpl later but dont want to uplod them just yet
-    # change to `img_path` to `best_match` to upload smpl
-    # img_path = "artifacts/sample_face.png"
     print(best_match)
     ipfs_response = ipfs.upload(best_match)
 
     # convert back to string (easier with dicts)
     token_id = str(token_id)
+    s3.upload_image(best_match_fname, img_numpy)
 
     metadata_object.add(
         token_id,
@@ -113,12 +115,10 @@ def get_smpl():
 
     smpl_image = f"data:image/png;base64,{b64_from_file(best_match)}"
 
-    return jsonify(
-        {
-            **metadata_object.get(token_id),
-            "smpl_image": smpl_image,
-        }
-    )
+    return jsonify({
+        **metadata_object.get(token_id),
+        "smpl_image": smpl_image,
+    })
 
 
 @app.route("/metadata/<token_id>", methods=["GET"])
