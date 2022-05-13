@@ -1,5 +1,4 @@
-import pickle
-from typing import Dict, List
+from typing import List
 
 import numpy as np
 
@@ -32,7 +31,7 @@ class Matcher:
         face_repr = self.model(face)
         scores = []
         skipped = []
-        for fpath, smpl_repr in self.smpls_embeddings.items():
+        for fpath, smpl_repr in self.smpls._smpls.items():
             if smpl_repr is None:
                 skipped.append(fpath)
                 continue
