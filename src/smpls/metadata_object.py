@@ -1,6 +1,5 @@
 from typing import Union, List
 from ..utils import load_json, save_json
-from ..eth import init
 from typing import TypedDict, List
 
 Attribute = TypedDict("Attribute", {"trait_type": str, "value": str})
@@ -86,18 +85,15 @@ class Metadata:
             )
         return metadata_entry
 
-    def _prepopulate(self):
-        _, contract = init()
-        total_supply = contract.functions.totalSupply().call()
-        for i in range(0, total_supply - 1):
-            self._metadata[str(i)] = {
-                "token_id": str(i),
-                "name": "UNCLAIMED SMPL",
-                "description": self._description,
-                "external_url": "",
-                "image": "ipfs://QmYypT49WH7rYTL2jXpfoNH2DAMHe9VM7pwwEjUVr45XK1",
-                "attributes": [],
-            }
+    def _blank(self, token_id: str):
+        return {
+            "token_id": token_id,
+            "name": "UNCLAIMED SMPL",
+            "description": self._description,
+            "external_url": "",
+            "image": "ipfs://QmYypT49WH7rYTL2jXpfoNH2DAMHe9VM7pwwEjUVr45XK1",
+            "attributes": [],
+        }
 
     def add(
         self,
@@ -123,8 +119,9 @@ class Metadata:
         if token_id in self._metadata:
             return self._metadata[token_id]
         else:
-            return None
+            return self._blank(token_id)
 
+    # metadtata should be backed up under IPFS or somewhere it never gets lost
     # something like that
     def check(self, name):
         for i in self._metadata:
