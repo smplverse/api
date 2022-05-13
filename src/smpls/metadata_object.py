@@ -40,8 +40,6 @@ class Metadata:
 
     def __init__(self):
         self._load()
-        if self._metadata == {}:
-            self._prepopulate()
 
     def _load(self):
         metadata = load_json("artifacts/metadata.json")
