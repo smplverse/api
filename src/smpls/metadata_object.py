@@ -36,7 +36,7 @@ class Metadata:
         "059324",
     ]
 
-    _base_s3_url = "https://smplverse.s3.us-east-2.amazonaws.com/"
+    _base_s3_url = "https://smplverse.s3.us-east-2.amazonaws.com"
 
     def __init__(self):
         self._load()

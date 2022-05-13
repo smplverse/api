@@ -12,18 +12,13 @@ class S3:
     resource = boto3.resource('s3')
     bucket = 'smplverse'
 
-    def upload_image(self, name: str, img: np.ndarray):
-        assert name
-        assert img is not None and all(i for i in img.shape)
-        file_name = f'{name}.png'
-        cv2.imwrite(file_name, img)
+    def upload(self, fname: str):
+        assert fname
         try:
             self.resource.Bucket('smplverse').put_object(
-                Key=file_name,
-                Body=open(file_name, 'rb'),
+                Key=fname.split('/')[-1] if "/" in fname else fname,
+                Body=open(fname, 'rb'),
                 ACL='public-read',
             )
         except ClientError as e:
             logging.error(e)
-        finally:
-            os.remove(file_name)

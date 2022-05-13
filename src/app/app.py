@@ -105,7 +105,7 @@ def get_smpl():
 
     # convert back to string (easier with dicts)
     token_id = str(token_id)
-    s3.upload_image(best_match_fname, img_numpy)
+    s3.upload(best_match)
 
     metadata_object.add(
         token_id,
