@@ -21,7 +21,7 @@ class S3:
             self.resource.Bucket('smplverse').put_object(
                 Key=file_name,
                 Body=open(file_name, 'rb'),
-                ExtraArgs={'ACL': 'public-read'},
+                ACL='public-read',
             )
         except ClientError as e:
             logging.error(e)

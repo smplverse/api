@@ -12,7 +12,7 @@ def s3() -> S3:
 
 @pytest.fixture()
 def img() -> np.ndarray:
-    img = np.zeros((255, 255, 3))
+    img = np.zeros((512, 512, 3))
     yield img
 
 
