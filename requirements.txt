@@ -6,3 +6,4 @@ flask
 web3
 gunicorn
 boto3
+pytest

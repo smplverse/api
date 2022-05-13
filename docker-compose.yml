@@ -17,10 +17,10 @@ services:
     working_dir: /code
     volumes:
       - ./:/code
+      - ~/.aws:/root/.aws
     ports:
       - 5000:5000
     command: gunicorn src.app.app:app
-    # command: python main.py
     ipc: host
     ulimits:
       memlock: -1
