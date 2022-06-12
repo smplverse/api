@@ -108,6 +108,5 @@ def test_fails_for_different_image():
             "tokenId": "0",
         },
     )
-    print(response.text)
     assert response.status_code == 401
     assert response.text == "Image hash does not match one in contract"

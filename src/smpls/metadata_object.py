@@ -20,20 +20,16 @@ MetadataEntry = TypedDict(
 class Metadata:
     _metadata = {}
 
-    _description = "SMPLverse is a collection of synthetic face data from the computational infrastructure of the metaverse, assigned to minters using facial recognition."
+    _description = "SMPLverse NFTs use facial recognition to retrieve synthetic training data from the computational infrastructure of the metaverse."
 
     _clustered_ones = [
-        "037544",
-        "069701",
-        "099370",
-        "093321",
-        "051039",
-        "046594",
-        "059759",
-        "074727",
-        "083824",
-        "037661",
-        "059324",
+        "078131",
+        "017289",
+        "085461",
+        "001785",
+        "012285",
+        "086697",
+        "012364",
     ]
 
     _base_s3_url = "https://smplverse.s3.us-east-2.amazonaws.com"
@@ -60,11 +56,16 @@ class Metadata:
         user_img_hash: str,
     ) -> MetadataEntry:
         metadata_entry: MetadataEntry = {
-            "token_id": token_id,
-            "name": f"SMPL #{best_match_fname}",
-            "description": self._description,
-            "external_url": f"{self._base_s3_url}/{best_match_fname}.png",
-            "image": f"ipfs://{ipfs_hash}",
+            "token_id":
+            token_id,
+            "name":
+            f"SMPL #{best_match_fname}",
+            "description":
+            self._description,
+            "external_url":
+            f"{self._base_s3_url}/{best_match_fname}.png",
+            "image":
+            f"ipfs://{ipfs_hash}",
             "attributes": [
                 {
                     "trait_type": "confidence",
@@ -77,12 +78,10 @@ class Metadata:
             ],
         }
         if best_match_fname in self._clustered_ones:
-            metadata_entry["attributes"].append(
-                {
-                    "trait_type": "Head Pose",
-                    "value": "cluster_182",
-                }
-            )
+            metadata_entry["attributes"].append({
+                "trait_type": "Head Pose",
+                "value": "cluster_747",
+            })
         return metadata_entry
 
     def _blank(self, token_id: str):

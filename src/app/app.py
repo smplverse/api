@@ -72,7 +72,7 @@ def get_smpl():
 
     user_img_hash = "0x" + sha256(image.encode()).hexdigest()
     hash_in_contract = "0x" + contract.functions.uploads(token_id).call().hex()
-    
+
     existing_metadata = metadata_object.get(token_id)
     if 'name' in existing_metadata:
         if existing_metadata["name"] != "UNCLAIMED SMPL":
