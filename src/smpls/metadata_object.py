@@ -90,7 +90,7 @@ class Metadata:
             "name": "UNCLAIMED SMPL",
             "description": self._description,
             "external_url": "",
-            "image": "ipfs://QmYypT49WH7rYTL2jXpfoNH2DAMHe9VM7pwwEjUVr45XK1",
+            "image": "ipfs://QmcbP1QmrEmTcumRbufYnmad95tH5ix7HD84PszQxJK1R2",
             "attributes": [],
         }
 
