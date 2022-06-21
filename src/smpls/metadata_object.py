@@ -65,7 +65,7 @@ class Metadata:
             "external_url":
             f"{self._base_s3_url}/{best_match_fname}.png",
             "image":
-            f"ipfs://{ipfs_hash}",
+            "ipfs://%s" % ipfs_hash,
             "attributes": [
                 {
                     "trait_type": "confidence",

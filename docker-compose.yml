@@ -7,10 +7,9 @@ services:
     volumes:
       - ./nginx:/etc/nginx
   api:
-    env_file: 
+    env_file:
       - ./.env
-    build: .
-    image: piotrostr/smplverse-api
+    image: piotrostr/api
     container_name: api
     platform: linux/amd64
     working_dir: /code
@@ -20,13 +19,4 @@ services:
     ports:
       - 5000:5000
     command: gunicorn src.app.app:app
-    ipc: host
-    ulimits:
-      memlock: -1
-      stack: 67108864
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              capabilities: [gpu]
+    build: .
