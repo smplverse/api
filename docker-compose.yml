@@ -1,11 +1,5 @@
 version: '3'
 services:
-  nginx:
-    image: nginx
-    ports:
-      - 8000:80
-    volumes:
-      - ./nginx:/etc/nginx
   api:
     env_file:
       - ./.env
