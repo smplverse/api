@@ -4,7 +4,7 @@ from flask import Flask, jsonify, request
 
 from ..eth import init
 from ..inference_package.matcher import Matcher
-from ..utils import b64_to_numpy, numpy_to_b64, format_address, b64_from_file
+from ..utils import b64_to_numpy, numpy_to_b64, format_address
 from ..smpls import Metadata
 from ..ipfs import IPFS
 from ..s3 import S3
@@ -98,15 +98,15 @@ def get_smpl():
     _, img_b64 = image.split(",")
     img_numpy = b64_to_numpy(img_b64)
     best_match, distance = matcher.match(img_numpy)
-    best_match_fname = best_match.split("/")[-1].split(".")[0]
+    # best_match is data/smpls/[smpl].png
+    best_match_fname, ext = best_match.split("/")[-1].split(".")[0]
 
-    print(best_match)
-    ipfs_response = ipfs.upload(best_match)
+    smpl_s3_key = "smpls/" + best_match + ext
+    s3.make_public(smpl_s3_key)
+    best_match_img = s3.get_img(smpl_s3_key)
+    ipfs_response = ipfs.upload_numpy(best_match_img)
 
-    # convert back to string (easier with dicts)
     token_id = str(token_id)
-    s3.upload(best_match)
-
     metadata_object.add(
         token_id,
         best_match_fname,
@@ -115,7 +115,7 @@ def get_smpl():
         user_img_hash,
     )
 
-    smpl_image = f"data:image/png;base64,{b64_from_file(best_match)}"
+    smpl_image = f"data:image/png;base64,{numpy_to_b64(best_match_img)}"
 
     return jsonify({
         **metadata_object.get(token_id),
