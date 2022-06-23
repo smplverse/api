@@ -2,8 +2,8 @@ import base64
 import os
 from typing import TypedDict
 
+import numpy as np
 import requests
-
 
 IpfsResponse = TypedDict(
     "IpfsResponse",
@@ -34,6 +34,14 @@ class IPFS:
             f"{self.endpoint}/api/v0/add",
             params={"pin": "false"},
             files={path: open(path, "rb")},
+        )
+        return response.json()
+
+    def upload_numpy(self, fname: str, img: np.ndarray) -> IpfsResponse:
+        response = self.s.post(
+            f"{self.endpoint}/api/v0/add",
+            params={"pin": "false"},
+            files={fname: img.tobytes()},
         )
         return response.json()
 
