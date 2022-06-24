@@ -62,9 +62,11 @@ class Metadata:
             f"SMPL #{best_match_fname}",
             "description":
             self._description,
+            "image":
+            f"{self._base_s3_url}/smpls/{best_match_fname}.png",
             "external_url":
             f"{self._base_s3_url}/smpls/{best_match_fname}.png",
-            "image":
+            "ipfs_url":
             "ipfs://%s" % ipfs_hash,
             "attributes": [
                 {
