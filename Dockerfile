@@ -1,4 +1,5 @@
-FROM ubuntu:20.04
+FROM nvcr.io/nvidia/cuda:11.6.1-cudnn8-runtime-ubuntu20.04
+
 WORKDIR /code
 RUN apt-get update && apt-get install -y \
     python3-cytoolz \
