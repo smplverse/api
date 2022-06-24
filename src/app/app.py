@@ -134,6 +134,6 @@ def get_metadata(token_id: str):
     except (ValueError, AssertionError):
         return "Invalid token_id", 400
     total_supply = contract.functions.totalSupply().call()
-    if int(token_id) + 1 > total_supply:
+    if int(token_id) > total_supply:
         return "Token not minted yet", 404
     return metadata_object.get(token_id)

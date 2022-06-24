@@ -5,7 +5,7 @@ from typing import Tuple
 from web3 import HTTPProvider, Web3
 from web3.contract import Contract
 
-CHAIN = "rinkeby"
+CHAIN = os.environ.get("CHAIN")
 INFURA_KEY = os.environ.get("INFURA_KEY")
 CONTRACT_ADDRESS = os.environ.get(f"CONTRACT_ADDRESS_{CHAIN.upper()}")
 
