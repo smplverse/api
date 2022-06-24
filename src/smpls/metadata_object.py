@@ -63,7 +63,7 @@ class Metadata:
             "description":
             self._description,
             "external_url":
-            f"{self._base_s3_url}/{best_match_fname}.png",
+            f"{self._base_s3_url}/smpls/{best_match_fname}.png",
             "image":
             "ipfs://%s" % ipfs_hash,
             "attributes": [
@@ -120,8 +120,6 @@ class Metadata:
         else:
             return self._blank(token_id)
 
-    # metadtata should be backed up under IPFS or somewhere it never gets lost
-    # something like that
     def check(self, name):
         for i in self._metadata:
             if self._metadata[i]["name"] == name:
