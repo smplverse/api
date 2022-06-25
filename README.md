@@ -7,9 +7,9 @@ After the frontend transaction is confirmed, the user-image is POST'ed from the 
 ## Routes
 
 - `GET /`
+- `GET /metadata/<token_id>`
 - `POST /get-smpl`
 - `POST /detect-face`
-- `GET /metadata/<token_id>`
 
 ## `.env` file format
 
