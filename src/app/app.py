@@ -99,15 +99,19 @@ def get_smpl():
     if user_img_hash != hash_in_contract:
         return "Image hash does not match one in contract", 401
 
-    _, img_b64 = image.split(",")
-    img_numpy = b64_to_numpy(img_b64)
-    best_match, distance = matcher.match(img_numpy)
-    best_match_fname = best_match.split("/")[-1].split(".")[0]
+    try:
+        _, img_b64 = image.split(",")
+        img_numpy = b64_to_numpy(img_b64)
+        best_match, distance = matcher.match(img_numpy)
+    except Exception as e:
+        print(e)
+        best_match, distance = matcher.get_random()
 
+    best_match_fname = best_match.split("/")[-1].split(".")[0]
     smpl_s3_key = "smpls/" + best_match_fname + ".png"
-    print(smpl_s3_key)
     s3.make_public(smpl_s3_key)
     best_match_img = s3.get_img(smpl_s3_key)
+
     ipfs_response = ipfs.upload_numpy(best_match_fname, best_match_img)
 
     token_id = str(token_id)

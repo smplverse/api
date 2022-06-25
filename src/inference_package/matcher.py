@@ -1,6 +1,7 @@
-from typing import List
+from typing import List, Tuple
 
 import numpy as np
+import random
 
 from .detector import Detector
 from .distance import Distance
@@ -42,3 +43,11 @@ class Matcher:
         self.smpls.claim(best_match)
         distance = np.min(scores)
         return best_match, distance
+
+    def get_random(self) -> Tuple[str, float]:
+        """
+        returns a random smpl
+        """
+        random_smpl = np.random.choice(self.smpls.available().keys())
+        self.smpls.claim(random_smpl)
+        return random_smpl, random.uniform(0, 0.7)
