@@ -1,6 +1,17 @@
 # SMPLverse API
 
-## env file
+## Workflow
+
+After the frontend transaction is confirmed, the user-image is POST'ed from the clientside, the backend verifies that the transaction data and state on the chain is indeed matching the request. After the assertions the matching is performed using the algorithm from [smlpverse/algo](https://github.com/smplverse/algo). The metadata is then generated and added to the main JSON.
+
+## Routes
+
+- `GET /`
+- `POST /get-smpl`
+- `POST /detect-face`
+- `GET /metadata/<token_id>`
+
+## `.env` file format
 
 ```bash
 IPFS_ENDPOINT=...
@@ -12,5 +23,6 @@ AWS_ACCESS_KEY=...
 AWS_SECRET_KEY=...
 INFURA_KEY=...
 CONTRACT_ADDRESS_RINKEBY=...
+CONTRACT_ADDRESS_MAINNET=...
 CHAIN=...
 ```
