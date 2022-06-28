@@ -1,9 +1,5 @@
 # SMPLverse API
 
-## Workflow
-
-After the frontend transaction is confirmed, the user-image is POST'ed from the clientside, the backend verifies that the transaction data and state on the chain is indeed matching the request. After the assertions the matching is performed using the algorithm from [smlpverse/algo](https://github.com/smplverse/algo). The metadata is then generated and added to the main JSON.
-
 ## Routes
 
 - `GET /`
